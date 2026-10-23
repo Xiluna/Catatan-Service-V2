@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0068B5">
+  <meta name="description" content="Buku catatan backup pekerjaan teknisi servis HP">
+  <title>Catatan Servis</title>
+
+  <!-- PWA & Favicon -->
+  <link rel="icon" type="image/x-icon" href="icons/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Top Sticky Header -->
+  <header class="site-header">
+    <div class="header-container">
+      <!-- Brand: ONLY LOGO IMAGE, strictly NO text -->
+      <a href="#beranda" class="brand-link" id="brandLink">
+        <img src="icons/logo.png" alt="Catatan Servis" class="header-logo">
+      </a>
+
+      <!-- Desktop Navigation Tabs (Exact Order: Beranda, Riwayat, Stok Part, Pengaturan) -->
+      <nav aria-label="Navigasi Utama">
+        <ul class="nav-links">
+          <li>
+            <button class="nav-link active" data-tab="beranda">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+              <span>Beranda</span>
+            </button>
+          </li>
+          <li>
+            <button class="nav-link" data-tab="riwayat">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <span>Riwayat</span>
+            </button>
+          </li>
+          <li>
+            <button class="nav-link" data-tab="stok-part">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+              <span>Stok Part</span>
+            </button>
+          </li>
+          <li>
+            <button class="nav-link" data-tab="pengaturan">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              <span>Pengaturan</span>
+            </button>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Desktop Header Actions -->
+      <div class="header-actions">
+        <!-- Sync Indicator -->
+        <div id="syncIndicator" class="sync-indicator" title="Status sinkronisasi data">
+          <span class="sync-dot"></span>
+          <span id="syncText">Tersinkron</span>
+        </div>
+
+        <!-- Add Entry Button (Shortcut N) -->
+        <button id="btnOpenModalDesk" class="btn btn-primary" title="Tambah entri baru (Tekan N)">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          <span>+ Tambah Entri</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Views Container -->
+  <main class="main-wrapper">
+
+    <!-- ==================== TAB 1: BERANDA ==================== -->
+    <section id="tab-beranda" class="view-section active">
+      <!-- Hero Banner (Semiconductor Corporate Style) -->
+      <div class="hero-banner">
+        <!-- SVG Circuit micro tracks decorative background -->
+        <svg class="hero-circuits" viewBox="0 0 480 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 20 H180 L220 60 H400 M60 80 H260 L300 120 H460 M20 140 H140 L180 180 H360" stroke="rgba(255,255,255,0.18)" stroke-width="1.5" stroke-dasharray="4 4"/>
+          <circle cx="180" cy="20" r="4" fill="#00AEEF" />
+          <circle cx="400" cy="60" r="4" fill="#00AEEF" />
+          <circle cx="260" cy="80" r="4" fill="#00AEEF" />
+          <circle cx="140" cy="140" r="4" fill="#00AEEF" />
+          <circle cx="360" cy="180" r="4" fill="#00AEEF" />
+        </svg>
+
+        <div class="hero-content">
+          <div>
+            <div class="hero-badge-wrap">
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+              <span id="heroMonthBadge">Oktober 2026</span>
+            </div>
+            <div class="hero-label">Total Profit Bulan Ini</div>
+            <div class="hero-profit-value" id="heroProfitValue">Rp 0</div>
+          </div>
+          <div class="hero-actions">
+            <button id="btnOpenModalHero" class="btn hero-btn-add">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+              <span>+ Tambah Entri</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 Summary Cards (Exact labels: Total Modal, Total Penjualan, Total Profit, Jumlah Kasus) -->
+      <div class="summary-grid">
+        <div class="summary-card">
+          <div class="card-label">Total Modal</div>
+          <div class="card-value" id="cardTotalModal">Rp 0</div>
+          <div class="card-subtext">Pengeluaran sparepart</div>
+        </div>
+        <div class="summary-card">
+          <div class="card-label">Total Penjualan</div>
+          <div class="card-value" id="cardTotalPenjualan">Rp 0</div>
+          <div class="card-subtext">Omzet pekerjaan</div>
+        </div>
+        <div class="summary-card card-profit">
+          <div class="card-label">Total Profit</div>
+          <div class="card-value" id="cardTotalProfit">Rp 0</div>
+          <div class="card-subtext">Keuntungan bersih</div>
+        </div>
+        <div class="summary-card">
+          <div class="card-label">Jumlah Kasus</div>
+          <div class="card-value" id="cardJumlahKasus">0</div>
+          <div class="card-subtext">Entri bulan berjalan</div>
+        </div>
+      </div>
+
+      <!-- Performance Charts Section -->
+      <section class="charts-section" id="chartsSection">
+        <div class="charts-header">
+          <div class="section-heading" style="margin-bottom: 0;">
+            <h2 class="section-title" style="font-size: 1.125rem;">Grafik Performa</h2>
+            <div class="section-accent-line"></div>
+          </div>
+          <div class="charts-toggle-wrap">
+            <button id="btnToggleChartMobile" class="btn btn-outline btn-sm">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+              <span id="chartToggleText">Sembunyikan Grafik</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="charts-container" id="chartsContainer">
+          <div class="chart-card">
+            <div class="chart-card-title">Profit Harian (Bulan Ini)</div>
+            <div class="chart-canvas-wrap">
+              <canvas id="dailyProfitChart"></canvas>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-card-title">Modal vs Profit</div>
+            <div class="chart-canvas-wrap">
+              <canvas id="compositionChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Monthly Transactions List -->
+      <div class="card-table-wrapper">
+        <div class="table-header-bar">
+          <div class="table-title">Daftar Transaksi Bulan Ini</div>
+          <span class="table-count-badge" id="homeTxCountBadge">0 Transaksi</span>
+        </div>
+
+        <!-- Desktop Table View -->
+        <div class="data-table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Tanggal</th>
+                <th>Cabang</th>
+                <th>Nama User</th>
+                <th>Perbaikan</th>
+                <th>Modal</th>
+                <th>Harga Jual</th>
+                <th>Profit</th>
+                <th style="text-align: right;">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="homeTableBody">
+              <!-- Populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Mobile Card List View -->
+        <div class="mobile-cards-container" id="homeMobileList">
+          <!-- Populated dynamically -->
+        </div>
+
+        <div id="homeEmptyState" class="empty-state" style="display: none;">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          <div class="empty-state-title">Belum ada transaksi bulan ini</div>
+          <p>Klik tombol "+ Tambah Entri" untuk mencatat pekerjaan servis pertama Anda.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 2: RIWAYAT ==================== -->
+    <section id="tab-riwayat" class="view-section">
+      <div class="section-heading">
+        <h1 class="section-title">Riwayat</h1>
+        <div class="section-accent-line"></div>
+      </div>
+
+      <!-- Riwayat Controls Card -->
+      <div class="history-controls-card">
+        <div class="filter-group">
+          <!-- Month Selector -->
+          <div style="min-width: 160px;">
+            <select id="historyMonthSelect" class="form-select" title="Pilih Bulan">
+              <!-- Populated dynamically -->
+            </select>
+          </div>
+
+          <!-- Branch Filter -->
+          <div style="min-width: 140px;">
+            <select id="historyBranchSelect" class="form-select" title="Filter Cabang">
+              <option value="">Semua Cabang</option>
+              <option value="Center">Center</option>
+              <option value="Icone">Icone</option>
+              <option value="Semampir">Semampir</option>
+            </select>
+          </div>
+
+          <!-- Search Filter -->
+          <div class="search-input-wrap">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <input type="text" id="historySearchInput" class="form-input" placeholder="Cari nama user, perbaikan, cabang...">
+          </div>
+        </div>
+
+        <!-- Export CSV Button -->
+        <button id="btnExportCSV" class="btn btn-outline" title="Export CSV untuk bulan terpilih">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          <span>Export CSV</span>
+        </button>
+      </div>
+
+      <!-- History Table / Cards -->
+      <div class="card-table-wrapper">
+        <div class="table-header-bar">
+          <div class="table-title" id="historyTableTitle">Riwayat Transaksi</div>
+          <span class="table-count-badge" id="historyTxCountBadge">0 Kasus</span>
+        </div>
+
+        <!-- Desktop Table View -->
+        <div class="data-table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Tanggal</th>
+                <th>Cabang</th>
+                <th>Nama User</th>
+                <th>Perbaikan</th>
+                <th>Modal</th>
+                <th>Harga Jual</th>
+                <th>Profit</th>
+                <th style="text-align: right;">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody">
+              <!-- Populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Mobile Card List View -->
+        <div class="mobile-cards-container" id="historyMobileList">
+          <!-- Populated dynamically -->
+        </div>
+
+        <div id="historyEmptyState" class="empty-state" style="display: none;">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          <div class="empty-state-title">Tidak ada transaksi yang cocok</div>
+          <p>Ubah filter pencarian atau pilih bulan lainnya.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 3: STOK PART ==================== -->
+    <section id="tab-stok-part" class="view-section">
+      <div class="section-heading" style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <h1 class="section-title">Stok Part</h1>
+          <div class="section-accent-line"></div>
+        </div>
+        <button id="btnOpenAddStock" class="btn btn-primary btn-sm">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          <span>+ Tambah Part</span>
+        </button>
+      </div>
+
+      <!-- Stock Controls Card -->
+      <div class="history-controls-card">
+        <div class="search-input-wrap" style="width: 100%;">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          <input type="text" id="stockSearchInput" class="form-input" placeholder="Cari nama part...">
+        </div>
+      </div>
+
+      <!-- Stock Table / Cards -->
+      <div class="card-table-wrapper">
+        <div class="table-header-bar">
+          <div class="table-title">Daftar Stok Part</div>
+          <span class="table-count-badge" id="stockCountBadge">0 Part</span>
+        </div>
+
+        <!-- Desktop Table View -->
+        <div class="data-table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Nama Part</th>
+                <th style="width: 180px; text-align: center;">Jumlah</th>
+                <th style="width: 120px; text-align: right;">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="stockTableBody">
+              <!-- Populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Mobile Card List View -->
+        <div class="mobile-cards-container" id="stockMobileList">
+          <!-- Populated dynamically -->
+        </div>
+
+        <div id="stockEmptyState" class="empty-state" style="display: none;">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+          <div class="empty-state-title">Belum ada stok part</div>
+          <p>Klik tombol "+ Tambah Part" untuk mencatat stok baru.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 4: PENGATURAN ==================== -->
+    <section id="tab-pengaturan" class="view-section">
+      <div class="section-heading">
+        <h1 class="section-title">Pengaturan</h1>
+        <div class="section-accent-line"></div>
+      </div>
+
+      <div class="settings-grid">
+        <!-- Backend Google Apps Script Settings -->
+        <div class="settings-card">
+          <h2 class="settings-card-title">Integrasi Google Sheets</h2>
+          <p class="settings-card-desc">Hubungkan aplikasi dengan Google Apps Script Web App untuk backup cloud otomatis.</p>
+
+          <div class="setting-form-group">
+            <label class="setting-label" for="settingAppScriptUrl">URL Web App Google Apps Script</label>
+            <input type="url" id="settingAppScriptUrl" class="form-input" placeholder="https://script.google.com/macros/s/.../exec">
+          </div>
+
+          <div class="setting-form-group">
+            <label class="setting-label" for="settingSecurityToken">Token Pengaman (Secret Token)</label>
+            <input type="password" id="settingSecurityToken" class="form-input" placeholder="Masukkan token rahasia yang sama dengan di Code.gs">
+          </div>
+
+          <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+            <button id="btnSaveBackendConfig" class="btn btn-primary">Simpan Pengaturan</button>
+            <button id="btnTestConnection" class="btn btn-outline">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+              <span>Tes Koneksi</span>
+            </button>
+            <span id="testConnectionStatus" style="font-size: 0.8125rem; font-weight: 600;"></span>
+          </div>
+        </div>
+
+        <!-- Price List Sync Card -->
+        <div class="settings-card">
+          <h2 class="settings-card-title">Daftar Harga Jual</h2>
+          <p class="settings-card-desc">Daftar harga dibaca dari tab "Harga Jual" di Google Sheets dan disimpan di cache lokal untuk pengisian otomatis.</p>
+          <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+            <button id="btnReloadPriceList" class="btn btn-outline">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+              <span>Muat ulang daftar harga</span>
+            </button>
+            <span id="reloadPriceStatus" style="font-size: 0.8125rem; font-weight: 600; color: var(--text-muted);"></span>
+          </div>
+        </div>
+
+        <!-- Appearance & Display Preferences -->
+        <div class="settings-card">
+          <h2 class="settings-card-title">Tampilan & Preferensi</h2>
+          <p class="settings-card-desc">Kustomisasi aksen warna dan tampilan grafik pada layar ponsel.</p>
+
+          <div class="setting-form-group">
+            <label class="setting-label">Pilihan Warna Aksen</label>
+            <div class="accent-picker-options" id="accentColorPicker">
+              <div class="color-option active" data-color="blue" style="background-color: #0068B5;" title="Biru (Default)">
+                <input type="radio" name="accentColor" value="blue" checked>
+              </div>
+              <div class="color-option" data-color="cyan" style="background-color: #0098B8;" title="Cyan">
+                <input type="radio" name="accentColor" value="cyan">
+              </div>
+              <div class="color-option" data-color="green" style="background-color: #0D8A50;" title="Hijau">
+                <input type="radio" name="accentColor" value="green">
+              </div>
+              <div class="color-option" data-color="orange" style="background-color: #D05307;" title="Oranye">
+                <input type="radio" name="accentColor" value="orange">
+              </div>
+              <div class="color-option" data-color="purple" style="background-color: #6D3AB2;" title="Ungu">
+                <input type="radio" name="accentColor" value="purple">
+              </div>
+              <div class="color-option" data-color="red" style="background-color: #C22A2A;" title="Merah">
+                <input type="radio" name="accentColor" value="red">
+              </div>
+            </div>
+          </div>
+
+          <div class="switch-wrapper">
+            <div class="switch-label-wrap">
+              <span class="switch-title">Tampilkan grafik (khusus HP)</span>
+              <span class="switch-subtitle">Secara bawaan grafik disembunyikan di layar ponsel agar lebih ringkas</span>
+            </div>
+            <label class="switch" for="switchShowChartsMobile">
+              <input type="checkbox" id="switchShowChartsMobile">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Data Management & Demo Mode -->
+        <div class="settings-card">
+          <h2 class="settings-card-title">Manajemen Data & Demo</h2>
+          <p class="settings-card-desc">Coba aplikasi dengan data contoh langsung atau bersihkan penyimpanan lokal.</p>
+
+          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <button id="btnLoadDemoData" class="btn btn-outline">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+              <span>Muat Data Contoh (Demo)</span>
+            </button>
+            <button id="btnClearData" class="btn btn-ghost" style="color: var(--status-danger);">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              <span>Reset Semua Data Lokal</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Mobile Bottom Navigation Bar (Exact Order: Beranda, Riwayat, Stok Part, Pengaturan) -->
+  <nav class="bottom-nav" aria-label="Navigasi Bawah">
+    <button class="bottom-nav-item active" data-tab="beranda">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      <span>Beranda</span>
+    </button>
+    <button class="bottom-nav-item" data-tab="riwayat">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <span>Riwayat</span>
+    </button>
+    <button class="bottom-nav-item" data-tab="stok-part">
+      <!-- Box icon for Stok Part -->
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+      <span>Stok Part</span>
+    </button>
+    <button class="bottom-nav-item" data-tab="pengaturan">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      <span>Pengaturan</span>
+    </button>
+  </nav>
+
+  <!-- Mobile Floating Action Button (FAB) -->
+  <button id="btnFabAdd" class="fab-btn" aria-label="Tambah entri baru" title="Tambah entri baru">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+  </button>
+
+  <!-- Entry Form Modal / Bottom Sheet -->
+  <div id="entryModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle" class="modal-title">Tambah Entri Servis</h2>
+        <button id="btnCloseModal" class="btn btn-ghost btn-icon" aria-label="Tutup form">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <form id="entryForm" class="modal-body">
+        <input type="hidden" id="entryId" value="">
+
+        <!-- Top Fields: Tanggal & Cabang -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="inputTanggal">Tanggal <span class="required-mark">*</span></label>
+            <input type="date" id="inputTanggal" class="form-input" required>
+          </div>
+
+          <div class="form-group">
+            <label for="selectCabang">Cabang <span class="required-mark">*</span></label>
+            <select id="selectCabang" class="form-select" required>
+              <option value="" disabled selected>Pilih Cabang</option>
+              <option value="Center">Center</option>
+              <option value="Icone">Icone</option>
+              <option value="Semampir">Semampir</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Nama User with Autocomplete -->
+        <div class="form-group">
+          <label for="inputNamaUser">Nama User <span class="required-mark">*</span></label>
+          <input type="text" id="inputNamaUser" class="form-input" list="userSuggestions" placeholder="Contoh: Budi Santoso / iPhone 11" required autocomplete="off">
+          <datalist id="userSuggestions"></datalist>
+        </div>
+
+        <!-- Items Perbaikan Section -->
+        <div class="items-section">
+          <div class="items-section-header">
+            <span class="items-section-title">Item Perbaikan</span>
+            <button type="button" id="btnAddItem" class="btn btn-outline btn-sm">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+              <span>+ Tambah item</span>
+            </button>
+          </div>
+
+          <!-- Items list container -->
+          <div id="itemsContainer" class="items-list">
+            <!-- Dynamic item rows rendered here -->
+          </div>
+
+          <!-- Autocomplete list for repair items -->
+          <datalist id="repairSuggestions"></datalist>
+
+          <!-- Profit Live Display (Strict rule: label Total Profit, no formula explanation) -->
+          <div class="profit-display-card">
+            <span class="profit-display-label">Total Profit</span>
+            <span id="formProfitValue" class="profit-display-value">Rp 0</span>
+          </div>
+        </div>
+      </form>
+
+      <div class="modal-footer">
+        <button type="button" id="btnCancelModal" class="btn btn-ghost">Batal</button>
+        <button type="button" id="btnSaveEntry" class="btn btn-primary">Simpan Entri</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal" class="modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal-content" style="max-width: 440px;">
+      <div class="modal-header">
+        <h2 class="modal-title" id="deleteModalTitle">Konfirmasi Hapus</h2>
+        <button id="btnCloseDeleteModal" class="btn btn-ghost btn-icon" aria-label="Tutup">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p id="deleteModalPrompt" style="margin-bottom: 0.5rem; color: var(--text-main); font-weight: 600;">Hapus entri ini?</p>
+        <p id="deleteModalDetails" style="font-size: 0.875rem; color: var(--text-muted);"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="btnCancelDelete" class="btn btn-ghost">Batal</button>
+        <button type="button" id="btnConfirmDelete" class="btn btn-danger">Hapus</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stock Modal (Tambah & Edit Part) -->
+  <div id="stockModal" class="modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal-content" style="max-width: 460px;">
+      <div class="modal-header">
+        <h2 class="modal-title" id="stockModalTitle">Tambah Part Baru</h2>
+        <button id="btnCloseStockModal" class="btn btn-ghost btn-icon" aria-label="Tutup">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <form id="stockForm" class="modal-body">
+        <input type="hidden" id="stockId" value="">
+        <div class="form-group">
+          <label for="inputStockNama">Nama Part <span class="required-mark">*</span></label>
+          <input type="text" id="inputStockNama" class="form-input" placeholder="Contoh: LCD IP 11 - BD" required autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label for="inputStockJumlah">Jumlah <span class="required-mark">*</span></label>
+          <input type="number" id="inputStockJumlah" class="form-input" min="0" step="1" value="1" required>
+        </div>
+      </form>
+      <div class="modal-footer">
+        <button type="button" id="btnCancelStock" class="btn btn-ghost">Batal</button>
+        <button type="button" id="btnSaveStock" class="btn btn-primary">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- JavaScript Modules -->
+  <script src="js/storage.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/sync.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
